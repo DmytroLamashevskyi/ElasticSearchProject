@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace ElasticSearchProject.Models
-{  
+{ 
     public class Property
     {
         [JsonProperty("propertyID")]

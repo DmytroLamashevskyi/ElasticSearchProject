@@ -20,15 +20,29 @@ namespace ElasticSearchProject.Controllers
             _logger = logger;
             _client = client;
         }
-        public IActionResult Index()
+
+        public IActionResult Index(string query)
         {
-            var results = _client.Search<Property>(s => s
-                .From(0) 
-                .Size(10)
-                .Query(q => q
-                    .MatchAll()
-                )
-            );
+            ISearchResponse<Property> results;
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                results = _client.Search<Property>(s => s
+                    .Query(q => q
+                        .Match(t => t
+                            .Field(f => f.Name)
+                            .Query(query)
+                        )
+                    )
+                );
+            }
+            else
+            {
+                results = _client.Search<Property>(s => s
+                    .Query(q => q
+                        .MatchAll()
+                    )
+                );
+            }
             return View(results);
         }
 

@@ -1,19 +1,79 @@
 ﻿@{
-    ViewData["Title"] = "Search Page";
+	ViewData["Title"] = "Search Page";
 }
 
 @model Nest.ISearchResponse<Property>
-<form asp-controller="Home" asp-action="Index" method="post">
-    <input type="text" name="query" />
-    <input type="submit" value="Search" />
-</form>
+
+<div class="container">
+ <div class="row">
+  <div class="col-md-12">
+   <form asp-controller="Home" asp-action="Index" method="post">
+	<div class="input-group">
+	 <input type="text" name="query" placeholder="Search query" class="form-control">
+	 <span class="input-group-btn">
+	  <input type="submit" name="commit" value="Search" class="btn btn-primary" data-disable-with="Search">
+	 </span>
+	 <span class="input-group-btn">
+	  <button tabindex="-1" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
+	   <span class="caret">Filters</span>
+	  </button>
+	  <ul role="menu" class="dropdown-menu">
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl">Name</span>
+	   </li>
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl"> FormerName </span>
+	   </li>
+	   <li class="divider dropdown-item"></li>
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl"> StreetAddress </span>
+	   </li>
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl"> City </span>
+	   </li>
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl"> Market  </span>
+	   </li>
+	   <li class="dropdown-item">
+		<input type="checkbox" class="form-check-inline"><span class="lbl"> State </span>
+	   </li>
+	  </ul>
+	 </span>
+	</div>
+   </form>
+  </div>
+ </div>
+ <hr>
+</div>
+
 @if (Model.Documents.Any())
 {
-    <h3>Search Results</h3>
-    <ul>
-    @foreach (var property in Model.Documents)
-    {
-        <li>Title: @property.Name (Address: @property.StreetAddress)</li>
-    }
-    </ul>
-}>
+
+	<table class="table table-striped table-bordered table-hover">
+	 <tr>
+	  <td colspan="4">
+	   <h3>Search Results</h3>
+				@foreach (var property in Model.Documents)
+				{
+		 <tr>
+		  <td>
+							@property.Name
+		  </td>
+		  <td class="text-right">
+							@property.StreetAddress
+		  </td>
+		  <td class="text-right">
+							@property.City
+		  </td>
+		  <td class="text-center">
+		   <a href="/Property/PropertyView/@property.PropertyID"  class="btn btn-sm btn-info">Open</a>
+		  </td>
+		 </tr>
+				}
+	</table>
+}
+else
+{
+	<h3>No Results</h3>
+
+}
