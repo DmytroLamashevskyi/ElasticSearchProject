@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Search Page";
+}
+
+@model Nest.ISearchResponse<Property>
+<form asp-controller="Home" asp-action="Index" method="post">
+    <input type="text" name="query" />
+    <input type="submit" value="Search" />
+</form>
+@if (Model.Documents.Any())
+{
+    <h3>Search Results</h3>
+    <ul>
+    @foreach (var property in Model.Documents)
+    {
+        <li>Title: @property.Name (Address: @property.StreetAddress)</li>
+    }
+    </ul>
+}>
