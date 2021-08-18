@@ -19,23 +19,23 @@
 	  </button>
 	  <ul role="menu" class="dropdown-menu">
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl">Name</span>
+		<input type="checkbox" name="byname" class="form-check-inline" checked="checked" /><span class="lbl">Name</span> 
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl"> FormerName </span>
+		<input type="checkbox" name="byFormerName" class="form-check-inline"/><span class="lbl"> FormerName </span>
 	   </li>
 	   <li class="divider dropdown-item"></li>
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl"> StreetAddress </span>
+		<input type="checkbox"  name="ByStreetAddress" class="form-check-inline"/><span class="lbl"> StreetAddress </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl"> City </span>
+		<input type="checkbox" name="ByCity" class="form-check-inline"/><span class="lbl"> City </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl"> Market  </span>
+		<input type="checkbox" name="ByMarket"  class="form-check-inline"/><span class="lbl"> Market  </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" class="form-check-inline"><span class="lbl"> State </span>
+		<input type="checkbox" name="ByState" class="form-check-inline"/><span class="lbl"> State </span>
 	   </li>
 	  </ul>
 	 </span>
@@ -51,11 +51,14 @@
 
 	<table class="table table-striped table-bordered table-hover">
 	 <tr>
-	  <td colspan="4">
+	  <td colspan="5">
 	   <h3>Search Results</h3>
 				@foreach (var property in Model.Documents)
 				{
 		 <tr>
+		  <td>
+							@property.propertyID
+		  </td>
 		  <td>
 							@property.Name
 		  </td>
@@ -66,7 +69,7 @@
 							@property.City
 		  </td>
 		  <td class="text-center">
-		   <a href="/Property/PropertyView/@property.PropertyID"  class="btn btn-sm btn-info">Open</a>
+		   <a asp-controller="Property"  asp-action="View" asp-route-id="@property.propertyID" class="btn btn-sm btn-info">Open</a>
 		  </td>
 		 </tr>
 				}

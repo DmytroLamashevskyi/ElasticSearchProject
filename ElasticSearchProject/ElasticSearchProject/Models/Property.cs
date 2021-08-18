@@ -9,7 +9,7 @@ namespace ElasticSearchProject.Models
     public class Property
     {
         [JsonProperty("propertyID")]
-        public ulong PropertyID { private set; get; }
+        public int propertyID { set; get; }
         [JsonProperty("name")]
         public string Name { set; get; }
         [JsonProperty("formerName")]

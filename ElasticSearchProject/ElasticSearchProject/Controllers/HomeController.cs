@@ -21,16 +21,39 @@ namespace ElasticSearchProject.Controllers
             _client = client;
         }
 
-        public IActionResult Index(string query)
+        public IActionResult Index(string query,string byname , string byFormerName ,
+                                            string ByStreetAddress, string ByCity, string ByMarket, string ByState)
         {
             ISearchResponse<Property> results;
             if (!string.IsNullOrWhiteSpace(query))
             {
                 results = _client.Search<Property>(s => s
                     .Query(q => q
-                        .Match(t => t
-                            .Field(f => f.Name)
-                            .Query(query)
+                        .Match(t =>
+                        {
+                            if(byname== "on")
+                                t.Field(f => f.Name);
+
+                            if (byFormerName == "on")
+                                t.Field(f => f.FormerName);
+
+                            if (ByStreetAddress == "on")
+                                t.Field(f => f.StreetAddress);
+
+                            if (ByCity == "on")
+                                t.Field(f => f.City);
+
+                            if (ByMarket == "on")
+                                t.Field(f => f.Market);
+
+                            if (ByState == "on")
+                                t.Field(f => f.State);
+
+                            t.Query(query);
+
+                            return t;
+                        }
+
                         )
                     )
                 );
@@ -50,6 +73,7 @@ namespace ElasticSearchProject.Controllers
         {
             return View();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
