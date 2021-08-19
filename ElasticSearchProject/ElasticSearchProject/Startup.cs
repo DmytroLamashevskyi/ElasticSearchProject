@@ -13,7 +13,7 @@ using ElasticsearchExtension;
 namespace ElasticSearchProject
 {
     public class Startup
-    {
+    { 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +25,7 @@ namespace ElasticSearchProject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton(new ElasticSearch().Init("property"));
+            services.AddSingleton(new ElasticSearch().Init(Configuration.GetSection("ElasticSearchIndex").Value));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
