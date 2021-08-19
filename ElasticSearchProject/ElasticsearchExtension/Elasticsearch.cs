@@ -16,7 +16,7 @@ namespace ElasticsearchExtension
             return new ElasticClient(settings);
         }
 
-        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, string query, List<Expression<Func<T, object>>> fieldList = null) where T : class
+        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, string query, List<Expression<Func<T, object>>> fieldList = null, int from = 0, int size = 1) where T : class
         {
             if (client == null)
                 throw new ArgumentNullException();
@@ -26,9 +26,9 @@ namespace ElasticsearchExtension
             if (fieldList == null)
             {
                 results = client.Search<T>(q =>
-                    q.Query(q => q
-                        .QueryString(qs => qs.Query(query))
-                    )
+                    q.Query(q =>
+                        q.QueryString(qs => qs.Query(query)) 
+                    ).From(from).Size(size)
                 );
             }
             else
@@ -44,7 +44,7 @@ namespace ElasticsearchExtension
 
                              return qs;
                          })
-                     )
+                     ).From(from).Size(size)
                  );
 
             }
@@ -52,12 +52,35 @@ namespace ElasticsearchExtension
             return results;
         }
 
-        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, string query) where T : class
+        public static ISearchResponse<T> Search<T>(ElasticClient client, string query, Expression<Func<T, object>> field, int from = 0, int size = 1) where T : class
+        {
+            if (client == null)
+                throw new ArgumentNullException();
+            if (String.IsNullOrEmpty(query))
+                throw new ArgumentNullException();
+            if (field == null)
+                throw new ArgumentNullException();
+
+            ISearchResponse<T> results = client.Search<T>(q =>
+                 q.Query(q => q
+                     .Match(qs =>
+                     {
+                         qs.Field(field);
+                         qs.Query(query);
+
+                         return qs;
+                     })
+                 ).From(from).Size(size)
+             );
+            return results;
+        }
+
+        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, string query, int from = 0, int size = 1) where T : class
         {
             var results = client.Search<T>(s => s
                .Query(q => q
                    .MatchAll()
-               )
+               ).From(from).Size(size)
            );
             return results;
         }

@@ -1,8 +1,7 @@
 ﻿@{
 	ViewData["Title"] = "Search Page";
 }
-
-@model Nest.ISearchResponse<Property>
+@model PageModel<Nest.ISearchResponse<Property>>
 
 <div class="container">
  <div class="row">
@@ -19,23 +18,23 @@
 	  </button>
 	  <ul role="menu" class="dropdown-menu">
 	   <li class="dropdown-item">
-		<input type="checkbox" name="byname" class="form-check-inline" checked="checked" /><span class="lbl">Name</span> 
+		<input type="checkbox" name="byname" class="form-check-inline" checked="checked" /><span class="lbl">Name</span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" name="byFormerName" class="form-check-inline"/><span class="lbl"> FormerName </span>
+		<input type="checkbox" name="byFormerName" class="form-check-inline" /><span class="lbl"> FormerName </span>
 	   </li>
 	   <li class="divider dropdown-item"></li>
 	   <li class="dropdown-item">
-		<input type="checkbox"  name="ByStreetAddress" class="form-check-inline"/><span class="lbl"> StreetAddress </span>
+		<input type="checkbox" name="ByStreetAddress" class="form-check-inline" /><span class="lbl"> StreetAddress </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" name="ByCity" class="form-check-inline"/><span class="lbl"> City </span>
+		<input type="checkbox" name="ByCity" class="form-check-inline" /><span class="lbl"> City </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" name="ByMarket"  class="form-check-inline"/><span class="lbl"> Market  </span>
+		<input type="checkbox" name="ByMarket" class="form-check-inline" /><span class="lbl"> Market  </span>
 	   </li>
 	   <li class="dropdown-item">
-		<input type="checkbox" name="ByState" class="form-check-inline"/><span class="lbl"> State </span>
+		<input type="checkbox" name="ByState" class="form-check-inline" /><span class="lbl"> State </span>
 	   </li>
 	  </ul>
 	 </span>
@@ -46,14 +45,14 @@
  <hr>
 </div>
 
-@if (Model.Documents.Any())
+@if (Model.Data.Documents.Any())
 {
 
 	<table class="table table-striped table-bordered table-hover">
 	 <tr>
 	  <td colspan="5">
 	   <h3>Search Results</h3>
-				@foreach (var property in Model.Documents)
+				@foreach (var property in Model.Data.Documents)
 				{
 		 <tr>
 		  <td>
@@ -69,14 +68,34 @@
 							@property.City
 		  </td>
 		  <td class="text-center">
-		   <a asp-controller="Property"  asp-action="View" asp-route-id="@property.propertyID" class="btn btn-sm btn-info">Open</a>
+		   <a asp-controller="Property" asp-action="View" asp-route-id="@property.propertyID" class="btn btn-sm btn-info">Open</a>
 		  </td>
 		 </tr>
 				}
 	</table>
+
+	<div>
+	 <ul class="pagination">
+			@if (Model.ShowPrevious)
+			{
+				<li class="page-item">
+			  @Html.ActionLink("Previous", "Index", "Home", new  {curentPage = Model.CurrentPage-1 },new { @class = "page-link" })
+			 </li>
+			}
+			@if (Model.ShowNext)
+			{
+		  <li class="page-item">
+		    @Html.ActionLink("Next", "Index", "Home", new  {curentPage = Model.CurrentPage+1 },new { @class = "page-link" })
+			</li>
+			}
+	 </ul>
+	</div>
+
 }
 else
 {
 	<h3>No Results</h3>
 
 }
+
+
