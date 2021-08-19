@@ -1,4 +1,5 @@
-﻿using ElasticSearchProject.Models;
+﻿using ElasticsearchExtension;
+using ElasticSearchProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nest;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ElasticSearchProject.Controllers
@@ -27,44 +29,30 @@ namespace ElasticSearchProject.Controllers
             ISearchResponse<Property> results;
             if (!string.IsNullOrWhiteSpace(query))
             {
-                results = _client.Search<Property>(s => s
-                    .Query(q => q
-                        .QueryString(t =>
-                        {
-                            if (byname == "on")
-                                t.Fields(fs => fs.Field(f => f.Name));
+                var FieldsList = new List<Expression<Func<Property, object>>>();
+                if (byname == "on")
+                    FieldsList.Add(f=>f.Name);
 
-                            if (byFormerName == "on")
-                                t.Fields(fs => fs.Field(f => f.FormerName));
+                if (byFormerName == "on")
+                    FieldsList.Add(f => f.FormerName);
 
-                            if (ByStreetAddress == "on")
-                                t.Fields(fs => fs.Field(f => f.StreetAddress));
+                if (ByStreetAddress == "on")
+                    FieldsList.Add(f => f.StreetAddress);
 
-                            if (ByCity == "on")
-                                t.Fields(fs => fs.Field(f => f.City));
+                if (ByCity == "on")
+                    FieldsList.Add(f => f.City);
 
-                            if (ByMarket == "on")
-                                t.Fields(fs => fs.Field(f => f.Market));
+                if (ByMarket == "on")
+                    FieldsList.Add(f => f.Market);
 
-                            if (ByState == "on")
-                                t.Fields(fs => fs.Field(f => f.State));
+                if (ByState == "on")
+                    FieldsList.Add(f => f.State); 
 
-                            t.Query(query);
-
-                            return t;
-                        }
-
-                        )
-                    )
-                );
+                results = ElasticSearch.PartSearch<Property>(_client, query, FieldsList); 
             }
             else
             {
-                results = _client.Search<Property>(s => s
-                    .Query(q => q
-                        .MatchAll()
-                    )
-                );
+                results = ElasticSearch.MatchAll<Property>(_client, query); 
             }
             return View(results);
         }
