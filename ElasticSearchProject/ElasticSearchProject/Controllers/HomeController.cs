@@ -21,7 +21,7 @@ namespace ElasticSearchProject.Controllers
             _client = client;
         }
 
-        public IActionResult Index(string query,string byname , string byFormerName ,
+        public IActionResult Index(string query, string byname, string byFormerName,
                                             string ByStreetAddress, string ByCity, string ByMarket, string ByState)
         {
             ISearchResponse<Property> results;
@@ -29,25 +29,25 @@ namespace ElasticSearchProject.Controllers
             {
                 results = _client.Search<Property>(s => s
                     .Query(q => q
-                        .Match(t =>
+                        .QueryString(t =>
                         {
-                            if(byname== "on")
-                                t.Field(f => f.Name);
+                            if (byname == "on")
+                                t.Fields(fs => fs.Field(f => f.Name));
 
                             if (byFormerName == "on")
-                                t.Field(f => f.FormerName);
+                                t.Fields(fs => fs.Field(f => f.FormerName));
 
                             if (ByStreetAddress == "on")
-                                t.Field(f => f.StreetAddress);
+                                t.Fields(fs => fs.Field(f => f.StreetAddress));
 
                             if (ByCity == "on")
-                                t.Field(f => f.City);
+                                t.Fields(fs => fs.Field(f => f.City));
 
                             if (ByMarket == "on")
-                                t.Field(f => f.Market);
+                                t.Fields(fs => fs.Field(f => f.Market));
 
                             if (ByState == "on")
-                                t.Field(f => f.State);
+                                t.Fields(fs => fs.Field(f => f.State));
 
                             t.Query(query);
 

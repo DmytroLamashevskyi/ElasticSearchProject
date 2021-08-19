@@ -13,5 +13,9 @@ namespace ElasticsearchExtension
                 .DefaultIndex(model);
             return new ElasticClient(settings); 
         }
+
+
+
+
     }
 }
