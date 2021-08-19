@@ -1,110 +1,83 @@
-﻿@model ElasticSearchProject.Models.Property 
+﻿@model ElasticSearchProject.Models.Property
 
 @{
 	ViewData["Title"] = "View";
-}  
-
-<h1>View</h1>
-
+}
 <div>
- <h4>Property</h4>
+ <h4>(@Model.propertyID) @Model.Name</h4>
  <hr />
- <dl class="row">
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.propertyID)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.propertyID)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Name)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Name)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.FormerName)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.FormerName)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.StreetAddress)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.StreetAddress)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.City)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.City)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Market)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Market)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.State)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.State)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Lat)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Lat)
-  </dd>
-  <dt class="col-sm-2">
-			@Html.DisplayNameFor(model => model.Lng)
-  </dt>
-  <dd class="col-sm-10">
-			@Html.DisplayFor(model => model.Lng)
-  </dd>
- </dl>
+ <div class="container">
+  <div class="row">
+   <div class="col-md-4">
+	<div class="form-group">
+	 <label class="control-label">Name</label>
+	 <input type="text" class="form-control" value="@Model.Name" readonly="readonly">
+	</div>
+	<div class="form-group">
+	 <label class="control-label">Former Name</label>
+	 <input type="text" class="form-control" value="@Model.FormerName" readonly="readonly">
+	</div>
+	<div class="form-group">
+	 <label class="control-label">Street Address</label>
+	 <input type="text" class="form-control" value="@Model.StreetAddress" readonly="readonly">
+	</div>
+	<div class="form-group">
+	 <label class="control-label">City</label>
+	 <input type="text" class="form-control" value="@Model.City" readonly="readonly">
+	</div>
+	<div class="form-group">
+	 <label class="control-label">Market</label>
+	 <input type="text" class="form-control" value="@Model.Market" readonly="readonly">
+	</div>
+	<div class="form-group">
+	 <label class="control-label">State</label>
+	 <input type="text" class="form-control" value="@Model.State" readonly="readonly">
+	</div>
+   </div>
+   <div class="col-xl-8"> 
+	<div id='map' class='map' style="height:500px;width:100%;"></div>
+   </div>
+  </div>
+ </div>
 </div>
-  
-<div id='map' class='map' style="height:500px;width:100%;"></div>
-<script src='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.53.0/maps/maps-web.min.js'></script> 
- @section Scripts {
 
-    <script>
+<script src='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.53.0/maps/maps-web.min.js'></script>
+@section Scripts {
 
-        let map;
-		let itemCoordinates = [@Model.Lng.ToString().Replace(',','.'), @Model.Lat.ToString().Replace(',','.')];
-        map = tt.map({
+<script>
 
-            key: '@TempData["MyTomTomKey"]',
+	let map;
+	let itemCoordinates = [@Model.Lng.ToString().Replace(',','.'), @Model.Lat.ToString().Replace(',','.')];
+	map = tt.map({
 
-            container: 'map',
+		key: '@TempData["MyTomTomKey"]',
 
-            zoom: 15,
+		container: 'map',
 
-            center: itemCoordinates,
+		zoom: 15,
 
-            style: 'tomtom://vector/1/basic-main'
+		center: itemCoordinates,
 
-        });
-		var marker = new tt.Marker().setLngLat(itemCoordinates).addTo(map);
+		style: 'tomtom://vector/1/basic-main'
 
-		var popupOffsets = {
-			  top: [0, 0],
-			  bottom: [0, -70],
-			  'bottom-right': [0, -70],
-			  'bottom-left': [0, -70],
-			  left: [25, -35],
-			  right: [-25, -35]
-			}
-			
-		var popup = new tt.Popup({offset: popupOffsets}).setHTML("<b>@Model.Name</b><br/>@Model.StreetAddress");
-		marker.setPopup(popup).togglePopup();
-    </script>
+	});
+	var marker = new tt.Marker().setLngLat(itemCoordinates).addTo(map);
+
+	var popupOffsets = {
+		  top: [0, 0],
+		  bottom: [0, -70],
+		  'bottom-right': [0, -70],
+		  'bottom-left': [0, -70],
+		  left: [25, -35],
+		  right: [-25, -35]
+		}
+
+	var popup = new tt.Popup({offset: popupOffsets}).setHTML("<b>@Model.Name</b><br/>@Model.StreetAddress");
+	marker.setPopup(popup).togglePopup();
+</script>
 
 }
 
 <div>
- <a asp-controller="Home" asp-action="Index">Back to List</a>
+ <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark">Back to List</a>
 </div>

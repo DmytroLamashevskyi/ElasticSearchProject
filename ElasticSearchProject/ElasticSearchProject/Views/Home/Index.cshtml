@@ -78,15 +78,19 @@
 	 <ul class="pagination">
 			@if (Model.ShowPrevious)
 			{
-				<li class="page-item">
-			  @Html.ActionLink("Previous", "Index", "Home", new  {curentPage = Model.CurrentPage-1 },new { @class = "page-link" })
-			 </li>
+		  <li class="page-item">
+					@Html.ActionLink("Previous", "Index", "Home", new  {curentPage = Model.CurrentPage-1 },new { @class = "page-link" })
+		  </li>
 			}
+
+			  <li class="page-item">
+				  <p class = "page-link" >@Model.CurrentPage</p>
+			  </li>
 			@if (Model.ShowNext)
 			{
 		  <li class="page-item">
-		    @Html.ActionLink("Next", "Index", "Home", new  {curentPage = Model.CurrentPage+1 },new { @class = "page-link" })
-			</li>
+					@Html.ActionLink("Next", "Index", "Home", new  {curentPage = Model.CurrentPage+1 },new { @class = "page-link" })
+		  </li>
 			}
 	 </ul>
 	</div>
