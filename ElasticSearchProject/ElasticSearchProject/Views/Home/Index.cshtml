@@ -1,7 +1,8 @@
-﻿@{
+﻿@using System.Text.RegularExpressions;
+@{
 	ViewData["Title"] = "Search Page";
 }
-@model PageModel<Nest.ISearchResponse<Property>>
+@model PageModel<Property>
 
 <div class="container">
  <div class="row">
@@ -17,25 +18,12 @@
 	   <span class="caret">Filters</span>
 	  </button>
 	  <ul role="menu" class="dropdown-menu">
-	   <li class="dropdown-item">
-		<input type="checkbox" name="byname" class="form-check-inline" checked="checked" /><span class="lbl">Name</span>
-	   </li>
-	   <li class="dropdown-item">
-		<input type="checkbox" name="byFormerName" class="form-check-inline" /><span class="lbl"> FormerName </span>
-	   </li>
-	   <li class="divider dropdown-item"></li>
-	   <li class="dropdown-item">
-		<input type="checkbox" name="ByStreetAddress" class="form-check-inline" /><span class="lbl"> StreetAddress </span>
-	   </li>
-	   <li class="dropdown-item">
-		<input type="checkbox" name="ByCity" class="form-check-inline" /><span class="lbl"> City </span>
-	   </li>
-	   <li class="dropdown-item">
-		<input type="checkbox" name="ByMarket" class="form-check-inline" /><span class="lbl"> Market  </span>
-	   </li>
-	   <li class="dropdown-item">
-		<input type="checkbox" name="ByState" class="form-check-inline" /><span class="lbl"> State </span>
-	   </li>
+		 @foreach(var kvp in Model.Filters)
+		{
+		   <li class="dropdown-item">
+			<input type="checkbox" name="@("Filters[" + kvp.Key + "]")" class="form-check-inline" checked="@kvp.Value"  /><span class="lbl">@string.Join(" ", Regex.Split(kvp.Key, "(?=[A-Z])"))</span>
+		   </li>
+		} 
 	  </ul>
 	 </span>
 	</div>
@@ -56,7 +44,7 @@
 				{
 		 <tr>
 		  <td>
-							@property.propertyID
+							@property.PropertyId
 		  </td>
 		  <td>
 							@property.Name
@@ -68,7 +56,7 @@
 							@property.City
 		  </td>
 		  <td class="text-center">
-		   <a asp-controller="Property" asp-action="View" asp-route-id="@property.propertyID" class="btn btn-sm btn-info">Open</a>
+		   <a asp-controller="Property" asp-action="View" asp-route-id="@property.PropertyId" class="btn btn-sm btn-info">Open</a>
 		  </td>
 		 </tr>
 				}

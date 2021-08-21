@@ -4,7 +4,7 @@
 	ViewData["Title"] = "View";
 }
 <div>
- <h4>(@Model.propertyID) @Model.Name</h4>
+ <h4>(@Model.PropertyId) @Model.Name</h4>
  <hr />
  <div class="container">
   <div class="row">
@@ -47,7 +47,7 @@
 <script>
 
 	let map;
-	let itemCoordinates = [@Model.Lng.ToString().Replace(',','.'), @Model.Lat.ToString().Replace(',','.')];
+	let itemCoordinates = [@Model.Longitude.ToString().Replace(',','.'), @Model.Latitude.ToString().Replace(',','.')];
 	map = tt.map({
 
 		key: '@TempData["MyTomTomKey"]',

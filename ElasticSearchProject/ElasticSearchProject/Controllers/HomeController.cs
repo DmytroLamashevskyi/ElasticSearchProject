@@ -1,6 +1,7 @@
 ﻿using ElasticsearchExtension;
 using ElasticSearchProject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Nest;
 using System;
@@ -17,19 +18,16 @@ namespace ElasticSearchProject.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ElasticClient _client;
 
-
-
-        public HomeController(ILogger<HomeController> logger, ElasticClient client)
+        public HomeController(ILogger<HomeController> logger, ElasticClient client, IMemoryCache memoryCache)
         {
             _logger = logger;
             _client = client;
         }
 
-        public IActionResult Index(string query, string byname, string byFormerName,
-                                            string ByStreetAddress, string ByCity, string ByMarket, string ByState,string curentPage)
+        public IActionResult Index(string query, Dictionary<string, string> Filters, string curentPage)
         {
-            var Page = new PageModel<ISearchResponse<Property>>();
-            if (curentPage !=  null)
+            var Page = new PageModel<Property>();
+            if (curentPage != null)
             {
                 Page.CurrentPage = Int32.Parse(curentPage);
             }
@@ -37,35 +35,25 @@ namespace ElasticSearchProject.Controllers
             ISearchResponse<Property> results;
             if (!string.IsNullOrWhiteSpace(query))
             {
-                var FieldsList = new List<Expression<Func<Property, object>>>();
-                if (byname == "on")
-                    FieldsList.Add(f=>f.Name);
+                var FieldsList = new List<string>();
 
-                if (byFormerName == "on")
-                    FieldsList.Add(f => f.FormerName);
+                foreach (var pair in Filters)
+                {
+                    if (pair.Value == "on")
+                    FieldsList.Add(pair.Key); 
+                }
+                 
 
-                if (ByStreetAddress == "on")
-                    FieldsList.Add(f => f.StreetAddress);
-
-                if (ByCity == "on")
-                    FieldsList.Add(f => f.City);
-
-                if (ByMarket == "on")
-                    FieldsList.Add(f => f.Market);
-
-                if (ByState == "on")
-                    FieldsList.Add(f => f.State); 
-
-                results = ElasticSearch.PartSearch<Property>(_client, query, FieldsList, Page.PageSize * (Page.CurrentPage-1), Page.PageSize * (Page.CurrentPage));
+                results = ElasticSearch.PartSearch<Property>(_client, query, FieldsList, Page.PageSize * (Page.CurrentPage - 1), Page.PageSize * (Page.CurrentPage));
 
             }
             else
             {
-                results = ElasticSearch.MatchAll<Property>(_client, query, Page.PageSize * (Page.CurrentPage - 1), Page.PageSize * (Page.CurrentPage));
+                results = ElasticSearch.MatchAll<Property>(_client, Page.PageSize * (Page.CurrentPage - 1), Page.PageSize * (Page.CurrentPage));
             }
             Page.Data = results;
             Page.TotalPages = (int)Math.Ceiling((decimal)results.Total / Page.PageSize);
-             
+            Page.UpdateFilters(Filters);
             return View(Page);
         }
 

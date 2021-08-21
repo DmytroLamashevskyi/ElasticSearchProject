@@ -25,7 +25,7 @@ namespace ElasticSearchProject.Controllers
 
         public IActionResult View(int id)
         {
-            var property = ElasticSearch.Search<Property>(_client, id.ToString(), f => f.propertyID); 
+            var property = ElasticSearch.Search<Property>(_client, id.ToString(), "PropertyId"); 
 
             TempData["MyTomTomKey"] = MyTomTomKey;
             return View(property.Documents.FirstOrDefault());

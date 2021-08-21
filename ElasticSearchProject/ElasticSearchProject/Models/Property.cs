@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Nest;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,24 +9,24 @@ namespace ElasticSearchProject.Models
 { 
     public class Property
     {
-        [JsonProperty("propertyID")]
-        public int propertyID { set; get; }
-        [JsonProperty("name")]
+        [PropertyName("propertyID")] 
+        public int PropertyId { set; get; }
+        [PropertyName("name")]
         public string Name { set; get; }
-        [JsonProperty("formerName")]
+        [PropertyName("formerName")]
         public string FormerName { set; get; }
-        [JsonProperty("streetAddress")]
+        [PropertyName("streetAddress")]
         public string StreetAddress { set; get; }
-        [JsonProperty("city")]
+        [PropertyName("city")]
         public string City { set; get; }
-        [JsonProperty("market")]
+        [PropertyName("market")]
         public string Market { set; get; }
-        [JsonProperty("state")]
+        [PropertyName("state")]
         public string State { set; get; }
-        [JsonProperty("lat")]
-        public double Lat { set; get; }
-        [JsonProperty("lng")]
-        public double Lng { set; get; }
-
+        [PropertyName("lat")]
+        public double Latitude { set; get; }
+        [PropertyName("lng")]
+        public double Longitude { set; get; }
+         
     }
 }

@@ -16,7 +16,7 @@ namespace ElasticsearchExtension
             return new ElasticClient(settings);
         }
 
-        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, string query, List<Expression<Func<T, object>>> fieldList = null, int from = 0, int size = 1) where T : class
+        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, string query, List<string> fieldList = null, int from = 0, int size = 1) where T : class
         {
             if (client == null)
                 throw new ArgumentNullException();
@@ -38,7 +38,10 @@ namespace ElasticsearchExtension
                          .QueryString(qs =>
                          {
                              foreach (var arg in fieldList)
-                                 qs.Fields(fs => fs.Field(arg));
+                             {
+                                 var fieldString = new Field(typeof(T).GetProperty(arg));
+                                 qs.Fields(fs => fs.Field(fieldString));
+                             }
 
                              qs.Query(query);
 
@@ -52,19 +55,20 @@ namespace ElasticsearchExtension
             return results;
         }
 
-        public static ISearchResponse<T> Search<T>(ElasticClient client, string query, Expression<Func<T, object>> field, int from = 0, int size = 1) where T : class
+        public static ISearchResponse<T> Search<T>(ElasticClient client, string query, string fieldName = null, int from = 0, int size = 1) where T : class
         {
             if (client == null)
                 throw new ArgumentNullException();
             if (String.IsNullOrEmpty(query))
                 throw new ArgumentNullException();
-            if (field == null)
+            if (fieldName == null)
                 throw new ArgumentNullException();
 
             ISearchResponse<T> results = client.Search<T>(q =>
                  q.Query(q => q
                      .Match(qs =>
                      {
+                         var field = new Field(typeof(T).GetProperty(fieldName)); 
                          qs.Field(field);
                          qs.Query(query);
 
@@ -75,7 +79,7 @@ namespace ElasticsearchExtension
             return results;
         }
 
-        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, string query, int from = 0, int size = 1) where T : class
+        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, int from = 0, int size = 1) where T : class
         {
             var results = client.Search<T>(s => s
                .Query(q => q
