@@ -16,7 +16,7 @@ namespace ElasticSearchProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ElasticClient _client;
+        private readonly ElasticClient _client; 
 
         public HomeController(ILogger<HomeController> logger, ElasticClient client, IMemoryCache memoryCache)
         {
@@ -24,42 +24,44 @@ namespace ElasticSearchProject.Controllers
             _client = client;
         }
 
-        public IActionResult Index(string query, Dictionary<string, string> Filters, string curentPage)
-        {
-            var Page = new PageModel<Property>();
-            if (curentPage != null)
-            {
-                Page.CurrentPage = Int32.Parse(curentPage);
-            }
-
+        public IActionResult Index(PageModel<Property> page)
+        { 
             ISearchResponse<Property> results;
-            if (!string.IsNullOrWhiteSpace(query))
+            if (!string.IsNullOrWhiteSpace(page.Query))
             {
                 var FieldsList = new List<string>();
 
-                foreach (var pair in Filters)
+                foreach (var pair in page.Filters)
                 {
                     if (pair.Value == "on")
                     FieldsList.Add(pair.Key); 
-                }
+                } 
+                results = ElasticSearch.PartSearch<Property>(_client, page.Query, FieldsList, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
                  
-
-                results = ElasticSearch.PartSearch<Property>(_client, query, FieldsList, Page.PageSize * (Page.CurrentPage - 1), Page.PageSize * (Page.CurrentPage));
-
             }
             else
-            {
-                results = ElasticSearch.MatchAll<Property>(_client, Page.PageSize * (Page.CurrentPage - 1), Page.PageSize * (Page.CurrentPage));
+            { 
+                results = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
             }
-            Page.Data = results;
-            Page.TotalPages = (int)Math.Ceiling((decimal)results.Total / Page.PageSize);
-            Page.UpdateFilters(Filters);
-            return View(Page);
-        }
+            page.Data = results;
+            page.TotalPages = (int)Math.Ceiling((decimal)results.Total / page.PageSize); 
+            return View(page);
+        } 
 
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult PreviousPage(PageModel<Property> page)
+        {
+            page.CurrentPage--;
+            return Index(page);
+        }
+        public IActionResult NextPage(PageModel<Property> page)
+        {
+            page.CurrentPage++;
+            return Index(page);
         }
 
 

@@ -17,6 +17,7 @@ namespace ElasticSearchProject.Models
         public bool ShowPrevious => CurrentPage > 1;
         public bool ShowNext => CurrentPage < TotalPages;
         public Dictionary<string, string> Filters { set; get; }
+        public string Query { set; get; }
 
         public ISearchResponse<T> Data;
 
@@ -26,7 +27,8 @@ namespace ElasticSearchProject.Models
 
             foreach(var prop in typeof(T).GetProperties())
             {
-                Filters.Add(prop.Name, "on");
+                if(prop.PropertyType == typeof(string))
+                    Filters.Add(prop.Name, "on");
             }
 
         }

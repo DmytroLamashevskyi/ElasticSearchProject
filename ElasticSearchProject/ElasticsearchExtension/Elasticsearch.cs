@@ -2,7 +2,9 @@
 using Nest;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ElasticsearchExtension
 {
@@ -32,19 +34,23 @@ namespace ElasticsearchExtension
                 );
             }
             else
-            {
+            { 
+
                 results = client.Search<T>(q =>
                      q.Query(q => q
                          .QueryString(qs =>
                          {
+                             List<PropertyInfo> fildArray = new List<PropertyInfo>();
                              foreach (var arg in fieldList)
                              {
-                                 var fieldString = new Field(typeof(T).GetProperty(arg));
-                                 qs.Fields(fs => fs.Field(fieldString));
+                                 var fieldString = typeof(T).GetProperty(arg);
+                                 fildArray.Add(fieldString);
+
                              }
 
+                             qs.Fields(fildArray.ToArray());
                              qs.Query(query);
-
+                             
                              return qs;
                          })
                      ).From(from).Size(size)
@@ -53,7 +59,7 @@ namespace ElasticsearchExtension
             }
 
             return results;
-        }
+        } 
 
         public static ISearchResponse<T> Search<T>(ElasticClient client, string query, string fieldName = null, int from = 0, int size = 1) where T : class
         {

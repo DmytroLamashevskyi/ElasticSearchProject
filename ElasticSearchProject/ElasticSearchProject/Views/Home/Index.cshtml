@@ -9,7 +9,7 @@
   <div class="col-md-12">
    <form asp-controller="Home" asp-action="Index" method="post">
 	<div class="input-group">
-	 <input type="text" name="query" placeholder="Search query" class="form-control">
+	 <input type="text" name="query" placeholder="Search query" class="form-control" value="@Model.Query">
 	 <span class="input-group-btn">
 	  <input type="submit" name="commit" value="Search" class="btn btn-primary" data-disable-with="Search">
 	 </span>
@@ -18,12 +18,12 @@
 	   <span class="caret">Filters</span>
 	  </button>
 	  <ul role="menu" class="dropdown-menu">
-		 @foreach(var kvp in Model.Filters)
-		{
+							@foreach (var kvp in Model.Filters)
+							{
 		   <li class="dropdown-item">
-			<input type="checkbox" name="@("Filters[" + kvp.Key + "]")" class="form-check-inline" checked="@kvp.Value"  /><span class="lbl">@string.Join(" ", Regex.Split(kvp.Key, "(?=[A-Z])"))</span>
+			<input type="checkbox" name="@("Filters[" + kvp.Key + "]")" class="form-check-inline" checked="@kvp.Value==" on"" /><span class="lbl">@string.Join(" ", Regex.Split(kvp.Key, "(?=[A-Z])"))</span>
 		   </li>
-		} 
+							}
 	  </ul>
 	 </span>
 	</div>
@@ -62,25 +62,31 @@
 				}
 	</table>
 
-	<div>
-	 <ul class="pagination">
-			@if (Model.ShowPrevious)
-			{
-		  <li class="page-item">
-					@Html.ActionLink("Previous", "Index", "Home", new  {curentPage = Model.CurrentPage-1 },new { @class = "page-link" })
-		  </li>
-			}
+	<div> 
+	  <ul class="pagination">
+				@if (Model.ShowPrevious)
+				{
+		   <li class="page-item">
+			<button type="button" asp-action="PreviousPage" value="Previous" class="page-link" />
+		   </li>
+				}
 
-			  <li class="page-item">
-				  <p class = "page-link" >@Model.CurrentPage</p>
-			  </li>
-			@if (Model.ShowNext)
-			{
-		  <li class="page-item">
-					@Html.ActionLink("Next", "Index", "Home", new  {curentPage = Model.CurrentPage+1 },new { @class = "page-link" })
-		  </li>
-			}
-	 </ul>
+	   <li class="page-item">
+		<p class="page-link">@Model.CurrentPage</p>
+	   </li>
+				@if (Model.ShowNext)
+				{
+		   <li class="page-item">
+			<button type="button" asp-action="NextPage" value="Next" class="page-link" />
+		   </li>
+				}
+
+
+
+	   <li class="page-item">
+		<p class="page-link">@Model.TotalPages</p>
+	   </li>
+	  </ul> 
 	</div>
 
 }

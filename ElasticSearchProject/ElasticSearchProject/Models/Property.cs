@@ -1,5 +1,4 @@
-﻿using Nest;
-using Newtonsoft.Json;
+﻿using Nest; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace ElasticSearchProject.Models
         [PropertyName("lat")]
         public double Latitude { set; get; }
         [PropertyName("lng")]
-        public double Longitude { set; get; }
-         
+        public double Longitude { set; get; } 
+
     }
 }
