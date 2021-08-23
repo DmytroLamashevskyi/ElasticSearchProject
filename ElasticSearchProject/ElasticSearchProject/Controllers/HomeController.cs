@@ -24,8 +24,43 @@ namespace ElasticSearchProject.Controllers
             _client = client;
         }
 
-        public IActionResult Index(PageModel<Property> page)
+        public IActionResult Index(PageModel<Property> page, string submitButton, int? pagenumber)
+        {
+            switch (submitButton)
+            {
+                case "Next":
+                    return NextPage(page,pagenumber);
+                case "Previous":
+                    return PrevPage(page, pagenumber); 
+                case "Select Page":
+                    return SelectPage(page, pagenumber);
+                case "Search":
+                    return SearchPage(page);
+                default:
+                    return SearchPage(page);
+            }
+        }
+
+        private IActionResult SelectPage(PageModel<Property> page, int? pagenumber)
         { 
+            page.CurrentPage = pagenumber.Value;
+            return SearchPage(page);
+        }
+
+        private IActionResult PrevPage(PageModel<Property> page, int? pagenumber)
+        {
+            page.CurrentPage = pagenumber.Value-1;
+            return SearchPage(page);
+        }
+
+        private IActionResult NextPage(PageModel<Property> page, int? pagenumber)
+        {
+            page.CurrentPage = pagenumber.Value + 1;
+            return SearchPage(page);
+        }
+
+        public IActionResult SearchPage(PageModel<Property> page)
+        {
             ISearchResponse<Property> results;
             if (!string.IsNullOrWhiteSpace(page.Query))
             {
@@ -33,35 +68,26 @@ namespace ElasticSearchProject.Controllers
 
                 foreach (var pair in page.Filters)
                 {
-                    if (pair.Value == "on")
-                    FieldsList.Add(pair.Key); 
-                } 
+                    if (pair.Value)
+                        FieldsList.Add(pair.Key);
+                }
                 results = ElasticSearch.PartSearch<Property>(_client, page.Query, FieldsList, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
-                 
+
             }
             else
-            { 
+            {
                 results = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
             }
             page.Data = results;
-            page.TotalPages = (int)Math.Ceiling((decimal)results.Total / page.PageSize); 
+            page.UpdateFilters(page.Filters);
+            page.TotalPages = (int)Math.Ceiling((decimal)results.Total / page.PageSize);
             return View(page);
-        } 
+        }
+
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        public IActionResult PreviousPage(PageModel<Property> page)
-        {
-            page.CurrentPage--;
-            return Index(page);
-        }
-        public IActionResult NextPage(PageModel<Property> page)
-        {
-            page.CurrentPage++;
-            return Index(page);
         }
 
 

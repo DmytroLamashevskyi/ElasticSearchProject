@@ -16,31 +16,37 @@ namespace ElasticSearchProject.Models
         public int PageSize { get; set; } = 10;
         public bool ShowPrevious => CurrentPage > 1;
         public bool ShowNext => CurrentPage < TotalPages;
-        public Dictionary<string, string> Filters { set; get; }
+        public Dictionary<string, bool> Filters { set; get; }
         public string Query { set; get; }
 
         public ISearchResponse<T> Data;
 
         public PageModel()
         {
-            Filters = new Dictionary<string, string>();
-
-            foreach(var prop in typeof(T).GetProperties())
-            {
-                if(prop.PropertyType == typeof(string))
-                    Filters.Add(prop.Name, "on");
-            }
+            InitFilters();
 
         }
 
-        public void UpdateFilters(Dictionary<string, string> filters)
+        public void InitFilters()
         {
+            Filters = new Dictionary<string, bool>();
+            foreach (var prop in typeof(T).GetProperties())
+            {
+                if (prop.PropertyType == typeof(string))
+                    Filters.Add(prop.Name, true);
+            }
+        }
+
+        public void UpdateFilters(Dictionary<string, bool> filters)
+        {
+            var temp = new Dictionary<string, bool>(filters);
+            InitFilters();
             foreach (var prop in Filters)
             {
-                if (filters.ContainsKey(prop.Key))
-                    Filters[prop.Key] = "on";
+                if (temp.ContainsKey(prop.Key))
+                    Filters[prop.Key] = true;
                 else
-                    Filters[prop.Key] = null;
+                    Filters[prop.Key] = false;
             }
         }
     }
