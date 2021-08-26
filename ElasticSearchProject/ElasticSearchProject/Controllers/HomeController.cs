@@ -1,4 +1,5 @@
 ﻿using ElasticsearchExtension;
+using ElasticsearchExtension.Models;
 using ElasticSearchProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -16,7 +17,7 @@ namespace ElasticSearchProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ElasticClient _client; 
+        private readonly ElasticClient _client;
 
         public HomeController(ILogger<HomeController> logger, ElasticClient client, IMemoryCache memoryCache)
         {
@@ -29,9 +30,9 @@ namespace ElasticSearchProject.Controllers
             switch (submitButton)
             {
                 case "Next":
-                    return NextPage(page,pagenumber);
+                    return NextPage(page, pagenumber);
                 case "Previous":
-                    return PrevPage(page, pagenumber); 
+                    return PrevPage(page, pagenumber);
                 case "Select Page":
                     return SelectPage(page, pagenumber);
                 case "Search":
@@ -42,26 +43,25 @@ namespace ElasticSearchProject.Controllers
         }
 
         private IActionResult SelectPage(PageModel<Property> page, int? pagenumber)
-        { 
-            page.CurrentPage = pagenumber.Value;
+        {
+            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value : page.CurrentPage;
             return SearchPage(page);
         }
 
         private IActionResult PrevPage(PageModel<Property> page, int? pagenumber)
         {
-            page.CurrentPage = pagenumber.Value-1;
+            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value - 1 : page.CurrentPage;
             return SearchPage(page);
         }
 
         private IActionResult NextPage(PageModel<Property> page, int? pagenumber)
         {
-            page.CurrentPage = pagenumber.Value + 1;
+            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value + 1 : page.CurrentPage;
             return SearchPage(page);
         }
 
         public IActionResult SearchPage(PageModel<Property> page)
         {
-            ISearchResponse<Property> results;
             if (!string.IsNullOrWhiteSpace(page.Query))
             {
                 var FieldsList = new List<string>();
@@ -71,17 +71,13 @@ namespace ElasticSearchProject.Controllers
                     if (pair.Value)
                         FieldsList.Add(pair.Key);
                 }
-                results = ElasticSearch.PartSearch<Property>(_client, page.Query, FieldsList, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
-                page.UseMetadata = true;
+                page.Data = ElasticSearch.PartSearch<Property>(_client, page);
             }
             else
             {
-                results = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
-                page.UseMetadata = false;
+                page.Data = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
             }
-            page.Data = results;
             page.UpdateFilters(page.Filters);
-            page.TotalPages = (int)Math.Ceiling((decimal)results.Total / page.PageSize);
             return View(page);
         }
 

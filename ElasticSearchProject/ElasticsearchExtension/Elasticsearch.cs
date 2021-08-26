@@ -1,4 +1,5 @@
 ﻿using Elasticsearch.Net;
+using ElasticsearchExtension.Models;
 using Nest;
 using System;
 using System.Collections.Generic;
@@ -18,18 +19,25 @@ namespace ElasticsearchExtension
             return new ElasticClient(settings);
         }
 
-        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, string query, List<string> fieldList = null, int from = 0, int size = 1) where T : class
+        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, PageModel<T> page) where T : class
         {
+            if (page == null)
+                throw new ArgumentNullException(); 
             if (client == null)
                 throw new ArgumentNullException();
-            if (String.IsNullOrEmpty(query))
+            if (String.IsNullOrEmpty(page.Query))
                 throw new ArgumentNullException();
+
+            List<string> fieldList = page.Filters.Select(kvp => kvp.Key).ToList();
+            int from = page.PageSize * (page.CurrentPage - 1);
+            int size = page.PageSize * (page.CurrentPage);
             ISearchResponse<T> results;
+
             if (fieldList == null)
             {
                 results = client.Search<T>(q =>
                     q.Query(q =>
-                        q.QueryString(qs => qs.Query(query))
+                        q.QueryString(qs => qs.Query(page.Query))
                     ).From(from).Size(size)
                 );
             }
@@ -42,7 +50,7 @@ namespace ElasticsearchExtension
                     fildArray.Add(fieldString);
 
                 }
-                
+
                 results = client.Search<T>(q =>
                 {
                     q.Query(q => q
@@ -50,37 +58,27 @@ namespace ElasticsearchExtension
                         {
 
                             qs.Fields(fildArray.ToArray());
-                            qs.Query(query);
+                            qs.Query(page.Query);
                             qs.DefaultOperator(Operator.Or);
                             qs.Lenient(true);
 
                             return qs;
                         })
                     ).From(from).Size(size);
-                     
-                    q.Highlight(h => {
 
-                        var highlight = new Highlight { Fields = new Dictionary<Field, IHighlightField>() };
-                        //foreach (string fieldname in fieldList)
-                        //{
-                        //    var f = new Field(typeof(T).GetProperty(fieldname));
-                        //    var hf = new HighlightField
-                        //    {
-                        //        Type = HighlighterType.Plain, 
-                        //    };
-
-                        //    highlight.Fields.Add(f, hf);
-                        //}     
+                    q.Highlight(h =>
+                    { 
+                        var highlight = new Highlight { Fields = new Dictionary<Field, IHighlightField>() }; 
                         highlight.Fields = new FluentDictionary<Field, IHighlightField>().Add("*", new HighlightField());
-                        highlight.PreTags = new List<string>(){ "<b>" };
+                        highlight.PreTags = new List<string>() { "<b>" };
                         highlight.PostTags = new List<string>() { "</b>" };
 
                         return highlight;
-                    }); 
+                    });
                     return q;
                 });
             }
-            
+
             return results;
         }
 

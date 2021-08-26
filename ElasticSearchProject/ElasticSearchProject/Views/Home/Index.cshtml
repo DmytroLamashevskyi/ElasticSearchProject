@@ -1,4 +1,6 @@
 ﻿@using System.Text.RegularExpressions;
+@using ElasticsearchExtension.Models;
+
 @{
 	ViewData["Title"] = "Search Page";
 }
@@ -33,16 +35,14 @@
   <hr>
  </div>
 
-	@if (Model.Data.Documents.Any())
+	@if (Model.Data.Hits.Any())
 	{
 
 	 <table class="table table-striped table-bordered table-hover">
 	  <tr>
 	   <td colspan="5">
-		<h3>Search Results</h3>
-					@if (Model.UseMetadata)
-					{
-						foreach (var property in Model.Data.Hits)
+		<h3>Search Results</h3> 
+						@foreach (var property in Model.Data.Hits)
 						{
 						  <tr>
 						   <td>
@@ -82,31 +82,8 @@
 						   </td>
 						  </tr>
 						}
-					}
-					else
-					{
-						foreach (var property in Model.Data.Documents)
-						{
-						  <tr>
-						   <td>
-												@property.PropertyId
-						   </td>
-						   <td>
-												@property.Name
-						   </td>
-						   <td class="text-right">
-												@property.StreetAddress
-						   </td>
-						   <td class="text-right">
-												@property.City
-						   </td>
-						   <td class="text-center">
-							<a asp-controller="Property" asp-action="View" asp-route-id="@property.PropertyId" class="btn btn-sm btn-info">Open</a>
-						   </td>
-						  </tr>
-						}
-					}
-	 </table>
+					 
+			 </table>
 
 	 <div>
 	  <ul class="pagination">

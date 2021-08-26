@@ -4,9 +4,13 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - ElasticSearchProject</title>
-	<link href="~/lib/@@tomtom-international/web-sdk-maps/dist/maps.css"  rel="stylesheet" />
-	<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.37.2/maps/maps.css'/>
-        
+	<link href="~/lib/@@tomtom-international/web-sdk-maps/dist/maps.css" rel="stylesheet" />
+	<link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.37.2/maps/maps.css' />
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/@@tomtom-international/web-sdk-maps/dist/maps-web.min.js"> </script>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" />
 	<script>
@@ -28,7 +32,36 @@
 					<ul class="navbar-nav flex-grow-1">
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-						</li> 
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Search operators
+							</a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown"> 
+								<ul class="dropdown-item">
+									<li class="listitem">
+										<code class="literal">+</code> signifies AND operation
+									</li>
+									<li class="listitem">
+										<code class="literal">|</code> signifies OR operation
+									</li>
+									<li class="listitem">
+										<code class="literal">-</code> negates a single token
+									</li>
+									<li class="listitem">
+										<code class="literal">"</code> wraps a number of tokens to signify a phrase for searching
+									</li>
+									<li class="listitem">
+										<code class="literal">*</code> at the end of a term signifies a prefix query
+									</li>
+									<li class="listitem">
+										<code class="literal">(</code> and <code class="literal">)</code> signify precedence
+									</li> 
+								</ul>  
+								<div class="dropdown-divider"></div> 
+								<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Help">More</a>
+							</div>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -45,11 +78,7 @@
 			&copy; 2021 - ElasticSearchProject - <a asp-area="" asp-controller="Home" asp-action="Help">Help</a>
 		</div>
 	</footer>
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	<script   src="~/lib/@@tomtom-international/web-sdk-maps/dist/maps-web.min.js"> </script>
-	 
+
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
