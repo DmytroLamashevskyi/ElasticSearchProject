@@ -1,0 +1,31 @@
+﻿@{
+	ViewData["Title"] = "Search information";
+}
+<h1>@ViewData["Title"]</h1>
+
+<ul class="itemizedlist">
+ <li class="listitem">
+  <code class="literal">+</code> signifies AND operation
+ </li>
+ <li class="listitem">
+  <code class="literal">|</code> signifies OR operation
+ </li>
+ <li class="listitem">
+  <code class="literal">-</code> negates a single token
+ </li>
+ <li class="listitem">
+  <code class="literal">"</code> wraps a number of tokens to signify a phrase for searching
+ </li>
+ <li class="listitem">
+  <code class="literal">*</code> at the end of a term signifies a prefix query
+ </li>
+ <li class="listitem">
+  <code class="literal">(</code> and <code class="literal">)</code> signify precedence
+ </li>
+ <li class="listitem">
+  <code class="literal">~N</code> after a word signifies edit distance (fuzziness)
+ </li>
+ <li class="listitem">
+  <code class="literal">~N</code> after a phrase signifies slop amount
+ </li>
+</ul>

@@ -29,37 +29,43 @@ namespace ElasticsearchExtension
             {
                 results = client.Search<T>(q =>
                     q.Query(q =>
-                        q.QueryString(qs => qs.Query(query)) 
+                        q.QueryString(qs => qs.Query(query))
                     ).From(from).Size(size)
                 );
             }
             else
-            { 
+            {
+                List<PropertyInfo> fildArray = new List<PropertyInfo>();
+                foreach (var arg in fieldList)
+                {
+                    var fieldString = typeof(T).GetProperty(arg);
+                    fildArray.Add(fieldString);
+
+                }
 
                 results = client.Search<T>(q =>
-                     q.Query(q => q
-                         .QueryString(qs =>
-                         {
-                             List<PropertyInfo> fildArray = new List<PropertyInfo>();
-                             foreach (var arg in fieldList)
-                             {
-                                 var fieldString = typeof(T).GetProperty(arg);
-                                 fildArray.Add(fieldString);
+                {
+                    q.Query(q => q
+                        .QueryString(qs =>
+                        {
 
-                             }
+                            qs.Fields(fildArray.ToArray());
+                            qs.Query(query);
+                            qs.DefaultOperator(Operator.Or);
+                            qs.Lenient(true);
 
-                             qs.Fields(fildArray.ToArray());
-                             qs.Query(query);
-                             
-                             return qs;
-                         })
-                     ).From(from).Size(size)
-                 );
-
+                            return qs;
+                        })
+                    ).From(from).Size(size);
+                    q.Highlight(h => h 
+                              .Fields(f=>f.AllField().PreTags("<br>").PostTags("</br>"))  
+                       );
+                    return q;
+                });
             }
 
             return results;
-        } 
+        }
 
         public static ISearchResponse<T> Search<T>(ElasticClient client, string query, string fieldName = null, int from = 0, int size = 1) where T : class
         {
@@ -74,7 +80,7 @@ namespace ElasticsearchExtension
                  q.Query(q => q
                      .Match(qs =>
                      {
-                         var field = new Field(typeof(T).GetProperty(fieldName)); 
+                         var field = new Field(typeof(T).GetProperty(fieldName));
                          qs.Field(field);
                          qs.Query(query);
 

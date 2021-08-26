@@ -32,7 +32,7 @@ namespace ElasticSearchProject.Models
             Filters = new Dictionary<string, bool>();
             foreach (var prop in typeof(T).GetProperties())
             {
-                if (prop.PropertyType == typeof(string))
+                //if (prop.PropertyType == typeof(string))
                     Filters.Add(prop.Name, true);
             }
         }
