@@ -42,7 +42,7 @@ namespace ElasticsearchExtension
                     fildArray.Add(fieldString);
 
                 }
-
+                
                 results = client.Search<T>(q =>
                 {
                     q.Query(q => q
@@ -57,13 +57,30 @@ namespace ElasticsearchExtension
                             return qs;
                         })
                     ).From(from).Size(size);
-                    q.Highlight(h => h 
-                              .Fields(f=>f.AllField().PreTags("<br>").PostTags("</br>"))  
-                       );
+                     
+                    q.Highlight(h => {
+
+                        var highlight = new Highlight { Fields = new Dictionary<Field, IHighlightField>() };
+                        //foreach (string fieldname in fieldList)
+                        //{
+                        //    var f = new Field(typeof(T).GetProperty(fieldname));
+                        //    var hf = new HighlightField
+                        //    {
+                        //        Type = HighlighterType.Plain, 
+                        //    };
+
+                        //    highlight.Fields.Add(f, hf);
+                        //}     
+                        highlight.Fields = new FluentDictionary<Field, IHighlightField>().Add("*", new HighlightField());
+                        highlight.PreTags = new List<string>(){ "<b>" };
+                        highlight.PostTags = new List<string>() { "</b>" };
+
+                        return highlight;
+                    }); 
                     return q;
                 });
             }
-
+            
             return results;
         }
 

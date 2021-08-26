@@ -20,9 +20,9 @@
 	  <ul role="menu" class="dropdown-menu">
 							@foreach (var kvp in Model.Filters)
 							{
-		   <li class="dropdown-item"> 
-			   @Html.CheckBox("Filters[" + kvp.Key + "]", kvp.Value, new { @class = "form-check-inline"})
-				<span class="lbl">@string.Join(" ", Regex.Split(kvp.Key, "(?=[A-Z])"))</span>
+		   <li class="dropdown-item">
+									@Html.CheckBox("Filters[" + kvp.Key + "]", kvp.Value, new { @class = "form-check-inline"})
+			<span class="lbl">@string.Join(" ", Regex.Split(kvp.Key, "(?=[A-Z])"))</span>
 		   </li>
 							}
 	  </ul>
@@ -40,25 +40,71 @@
 	  <tr>
 	   <td colspan="5">
 		<h3>Search Results</h3>
-					@foreach (var property in Model.Data.Documents)
+					@if (Model.UseMetadata)
 					{
-		  <tr>
-		   <td>
-								@property.PropertyId
-		   </td>
-		   <td>
-								@property.Name
-		   </td>
-		   <td class="text-right">
-								@property.StreetAddress
-		   </td>
-		   <td class="text-right">
-								@property.City
-		   </td>
-		   <td class="text-center">
-			<a asp-controller="Property" asp-action="View" asp-route-id="@property.PropertyId" class="btn btn-sm btn-info">Open</a>
-		   </td>
-		  </tr>
+						foreach (var property in Model.Data.Hits)
+						{
+						  <tr>
+						   <td>
+									@if (property.Highlight.ContainsKey("propertyID"))
+									{
+										@Html.Raw(property.Highlight["propertyID"].FirstOrDefault()) 
+									}else{
+										@property.Source.PropertyId 
+									} 
+						   </td>
+						   <td> 
+									@if (property.Highlight.ContainsKey("name"))
+									{
+										@Html.Raw(property.Highlight["name"].FirstOrDefault()) 
+									}else{
+										@property.Source.Name 
+									} 
+						   </td>
+						   <td >
+									@if (property.Highlight.ContainsKey("streetAddress"))
+									{
+										@Html.Raw(property.Highlight["streetAddress"].FirstOrDefault()) 
+									}else{
+										@property.Source.StreetAddress
+									} 
+						   </td>
+						   <td>
+									@if (property.Highlight.ContainsKey("city"))
+									{
+										@Html.Raw(property.Highlight["city"].FirstOrDefault()) 
+									}else{
+										@property.Source.City
+									} 
+						   </td>
+						   <td class="text-center">
+							<a asp-controller="Property" asp-action="View" asp-route-id="@property.Source.PropertyId" class="btn btn-sm btn-info">Open</a>
+						   </td>
+						  </tr>
+						}
+					}
+					else
+					{
+						foreach (var property in Model.Data.Documents)
+						{
+						  <tr>
+						   <td>
+												@property.PropertyId
+						   </td>
+						   <td>
+												@property.Name
+						   </td>
+						   <td class="text-right">
+												@property.StreetAddress
+						   </td>
+						   <td class="text-right">
+												@property.City
+						   </td>
+						   <td class="text-center">
+							<a asp-controller="Property" asp-action="View" asp-route-id="@property.PropertyId" class="btn btn-sm btn-info">Open</a>
+						   </td>
+						  </tr>
+						}
 					}
 	 </table>
 
@@ -66,24 +112,24 @@
 	  <ul class="pagination">
 				@if (Model.ShowPrevious)
 				{
-		   <li class="page-item"> 
-			   <input type="submit" name="submitButton" value="Previous" class="page-link">
-			 
+		   <li class="page-item">
+			<input type="submit" name="submitButton" value="Previous" class="page-link">
+
 		   </li>
 				}
 
 	   <li class="page-item">
-		 <input type="number" step="1" max="@Model.TotalPages" class="page-link" name="pagenumber"  value="@Model.CurrentPage">
+		<input type="number" step="1" max="@Model.TotalPages" class="page-link" name="pagenumber" value="@Model.CurrentPage">
 	   </li>
 
 	   <li class="page-item">
-			   <input type="submit" name="submitButton" value="Select Page" class="page-link"  >
+		<input type="submit" name="submitButton" value="Select Page" class="page-link">
 	   </li>
 				@if (Model.ShowNext)
 				{
-		   <li class="page-item">  
-			   <input type="submit" name="submitButton" value="Next" class="page-link"  >
-			 
+		   <li class="page-item">
+			<input type="submit" name="submitButton" value="Next" class="page-link">
+
 		   </li>
 				}
 	   <li class="page-item">

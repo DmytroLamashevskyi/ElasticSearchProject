@@ -72,11 +72,12 @@ namespace ElasticSearchProject.Controllers
                         FieldsList.Add(pair.Key);
                 }
                 results = ElasticSearch.PartSearch<Property>(_client, page.Query, FieldsList, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
-
+                page.UseMetadata = true;
             }
             else
             {
                 results = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
+                page.UseMetadata = false;
             }
             page.Data = results;
             page.UpdateFilters(page.Filters);

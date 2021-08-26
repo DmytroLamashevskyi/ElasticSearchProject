@@ -18,6 +18,7 @@ namespace ElasticSearchProject.Models
         public bool ShowNext => CurrentPage < TotalPages;
         public Dictionary<string, bool> Filters { set; get; }
         public string Query { set; get; }
+        public bool UseMetadata { set; get; } = false;
 
         public ISearchResponse<T> Data;
 

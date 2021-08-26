@@ -22,8 +22,7 @@ namespace ElasticSearchUtil
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
-        { 
-
+        {  
             var path = @"F:\repos\ElasticSearchProject\TestData\properties.json";
             var indexName = "property";
             var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
