@@ -25,7 +25,7 @@ namespace ElasticSearchProject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton(new ElasticSearch().Init(Configuration.GetSection("ElasticSearchIndex").Value)); 
+            services.AddSingleton(new ElasticSearch().Init(Configuration.GetSection("ElasticSearchIndex").Value , Configuration.GetSection("ElasticSearchUrl").Value));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

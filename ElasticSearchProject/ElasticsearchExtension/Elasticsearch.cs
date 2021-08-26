@@ -10,9 +10,9 @@ namespace ElasticsearchExtension
 {
     public class ElasticSearch
     {
-        public ElasticClient Init(string model)
+        public ElasticClient Init(string model, string url)
         {
-            var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
+            var pool = new SingleNodeConnectionPool(new Uri(url));
             var settings = new ConnectionSettings(pool)
                 .DefaultIndex(model);
             return new ElasticClient(settings);
