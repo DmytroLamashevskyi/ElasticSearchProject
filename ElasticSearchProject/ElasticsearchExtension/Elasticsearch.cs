@@ -19,7 +19,14 @@ namespace ElasticsearchExtension
             return new ElasticClient(settings);
         }
 
-        public static ISearchResponse<T> PartSearch<T>(ElasticClient client, PageModel<T> page) where T : class
+        /// <summary>
+        /// Search by filters in query and selected fields
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public static ISearchResponse<T> FilteringSearch<T>(ElasticClient client, PageModel<T> page) where T : class
         {
             if (page == null)
                 throw new ArgumentNullException(); 
@@ -82,14 +89,27 @@ namespace ElasticsearchExtension
             return results;
         }
 
-        public static ISearchResponse<T> Search<T>(ElasticClient client, string query, string fieldName = null, int from = 0, int size = 1) where T : class
+        /// <summary>
+        /// Search by field name
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="page"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static ISearchResponse<T> SearchByField<T>(ElasticClient client, PageModel<T> page,string fieldName) where T : class
         {
             if (client == null)
                 throw new ArgumentNullException();
-            if (String.IsNullOrEmpty(query))
+            if (page == null)
+                throw new ArgumentNullException();
+            if (String.IsNullOrEmpty(page.Query))
                 throw new ArgumentNullException();
             if (fieldName == null)
                 throw new ArgumentNullException();
+
+            int from = page.PageSize * (page.CurrentPage - 1);
+            int size = page.PageSize * (page.CurrentPage);
 
             ISearchResponse<T> results = client.Search<T>(q =>
                  q.Query(q => q
@@ -97,7 +117,7 @@ namespace ElasticsearchExtension
                      {
                          var field = new Field(typeof(T).GetProperty(fieldName));
                          qs.Field(field);
-                         qs.Query(query);
+                         qs.Query(page.Query);
 
                          return qs;
                      })
@@ -106,8 +126,22 @@ namespace ElasticsearchExtension
             return results;
         }
 
-        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, int from = 0, int size = 1) where T : class
+        /// <summary>
+        /// Get all items
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public static ISearchResponse<T> MatchAll<T>(ElasticClient client, PageModel<T> page) where T : class
         {
+            if (client == null)
+                throw new ArgumentNullException();
+            if (page == null)
+                throw new ArgumentNullException();
+
+            int from = page.PageSize * (page.CurrentPage - 1);
+            int size = page.PageSize * (page.CurrentPage);
             var results = client.Search<T>(s => s
                .Query(q => q
                    .MatchAll()

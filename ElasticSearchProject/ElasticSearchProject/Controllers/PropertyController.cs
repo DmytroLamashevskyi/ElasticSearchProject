@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ElasticsearchExtension;
+using ElasticsearchExtension.Models;
 
 namespace ElasticSearchProject.Controllers
 {
@@ -15,7 +16,8 @@ namespace ElasticSearchProject.Controllers
     {
         private readonly ILogger<PropertyController> _logger;
         private readonly ElasticClient _client;
-        public readonly string MyTomTomKey;
+        private readonly string MyTomTomKey;
+
         public PropertyController(ILogger<PropertyController> logger, ElasticClient client, IConfiguration configuration)
         {
             _logger = logger;
@@ -25,7 +27,7 @@ namespace ElasticSearchProject.Controllers
 
         public IActionResult View(int id)
         {
-            var property = ElasticSearch.Search<Property>(_client, id.ToString(), "PropertyId"); 
+            var property = ElasticSearch.SearchByField<Property>(_client,new PageModel<Property>() { Query = id.ToString() } , "PropertyId"); 
 
             TempData["MyTomTomKey"] = MyTomTomKey;
             return View(property.Documents.FirstOrDefault());

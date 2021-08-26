@@ -29,53 +29,25 @@ namespace ElasticSearchProject.Controllers
         {
             switch (submitButton)
             {
-                case "Next":
-                    return NextPage(page, pagenumber);
-                case "Previous":
-                    return PrevPage(page, pagenumber);
-                case "Select Page":
-                    return SelectPage(page, pagenumber);
-                case "Search":
-                    return SearchPage(page);
+                case "Next": { page.CurrentPage = pagenumber.HasValue ? pagenumber.Value + 1 : page.CurrentPage; return SearchPage(page); }
+                case "Previous": { page.CurrentPage = pagenumber.HasValue ? pagenumber.Value - 1 : page.CurrentPage; return SearchPage(page); }
+                case "Select Page": { page.CurrentPage = pagenumber ?? page.CurrentPage; return SearchPage(page); }
+
+                case "Search": return SearchPage(page);
                 default:
                     return SearchPage(page);
             }
         }
 
-        private IActionResult SelectPage(PageModel<Property> page, int? pagenumber)
-        {
-            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value : page.CurrentPage;
-            return SearchPage(page);
-        }
-
-        private IActionResult PrevPage(PageModel<Property> page, int? pagenumber)
-        {
-            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value - 1 : page.CurrentPage;
-            return SearchPage(page);
-        }
-
-        private IActionResult NextPage(PageModel<Property> page, int? pagenumber)
-        {
-            page.CurrentPage = pagenumber.HasValue ? pagenumber.Value + 1 : page.CurrentPage;
-            return SearchPage(page);
-        }
-
         public IActionResult SearchPage(PageModel<Property> page)
         {
             if (!string.IsNullOrWhiteSpace(page.Query))
-            {
-                var FieldsList = new List<string>();
-
-                foreach (var pair in page.Filters)
-                {
-                    if (pair.Value)
-                        FieldsList.Add(pair.Key);
-                }
-                page.Data = ElasticSearch.PartSearch<Property>(_client, page);
+            { 
+                page.Data = ElasticSearch.FilteringSearch<Property>(_client, page);
             }
             else
             {
-                page.Data = ElasticSearch.MatchAll<Property>(_client, page.PageSize * (page.CurrentPage - 1), page.PageSize * (page.CurrentPage));
+                page.Data = ElasticSearch.MatchAll<Property>(_client, page);
             }
             page.UpdateFilters(page.Filters);
             return View(page);
