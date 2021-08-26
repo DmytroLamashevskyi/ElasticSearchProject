@@ -35,7 +35,7 @@ namespace ElasticsearchExtension
             if (String.IsNullOrEmpty(page.Query))
                 throw new ArgumentNullException();
 
-            List<string> fieldList = page.Filters.Select(kvp => kvp.Key).ToList();
+            List<string> fieldList = page.Filters.Where(kvp => kvp.Value==true).Select(kvp => kvp.Key).ToList();
             int from = page.PageSize * (page.CurrentPage - 1);
             int size = page.PageSize * (page.CurrentPage);
             ISearchResponse<T> results;

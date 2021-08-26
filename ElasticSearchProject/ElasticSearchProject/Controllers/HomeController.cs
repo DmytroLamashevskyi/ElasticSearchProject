@@ -23,6 +23,7 @@ namespace ElasticSearchProject.Controllers
         {
             _logger = logger;
             _client = client;
+
         }
 
         public IActionResult Index(PageModel<Property> page, string submitButton, int? pagenumber)
@@ -31,8 +32,7 @@ namespace ElasticSearchProject.Controllers
             {
                 case "Next": { page.CurrentPage = pagenumber.HasValue ? pagenumber.Value + 1 : page.CurrentPage; return SearchPage(page); }
                 case "Previous": { page.CurrentPage = pagenumber.HasValue ? pagenumber.Value - 1 : page.CurrentPage; return SearchPage(page); }
-                case "Select Page": { page.CurrentPage = pagenumber ?? page.CurrentPage; return SearchPage(page); }
-
+                case "Select Page": { page.CurrentPage = pagenumber ?? page.CurrentPage; return SearchPage(page); } 
                 case "Search": return SearchPage(page);
                 default:
                     return SearchPage(page);
@@ -49,7 +49,7 @@ namespace ElasticSearchProject.Controllers
             {
                 page.Data = ElasticSearch.MatchAll<Property>(_client, page);
             }
-            page.UpdateFilters(page.Filters);
+            page.UpdateFilters(page.Filters,false);
             return View(page);
         }
 

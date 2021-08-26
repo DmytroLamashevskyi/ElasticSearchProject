@@ -18,10 +18,10 @@ namespace ElasticsearchExtension.Models
 
         public PageModel()
         {
-            InitFilters(); 
+            InitFilters(false);
         }
 
-        public void InitFilters(bool AddnumberTypes=true)
+        public void InitFilters(bool AddnumberTypes=false)
         {
             Filters = new Dictionary<string, bool>();
             foreach (var prop in typeof(T).GetProperties())
@@ -31,7 +31,7 @@ namespace ElasticsearchExtension.Models
             }
         }
 
-        public void UpdateFilters(Dictionary<string, bool> filters, bool AddnumberTypes = true)
+        public void UpdateFilters(Dictionary<string, bool> filters, bool AddnumberTypes = false)
         {
             var temp = new Dictionary<string, bool>(filters);
             InitFilters(AddnumberTypes);

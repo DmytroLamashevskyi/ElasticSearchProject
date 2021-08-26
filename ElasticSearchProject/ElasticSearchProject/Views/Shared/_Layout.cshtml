@@ -38,30 +38,23 @@
 								Search operators
 							</a>
 							<div class="dropdown-menu" aria-labelledby="navbarDropdown"> 
-								<ul class="dropdown-item">
-									<li class="listitem">
-										<code class="literal">+</code> signifies AND operation
-									</li>
-									<li class="listitem">
-										<code class="literal">|</code> signifies OR operation
-									</li>
-									<li class="listitem">
-										<code class="literal">-</code> negates a single token
-									</li>
-									<li class="listitem">
-										<code class="literal">"</code> wraps a number of tokens to signify a phrase for searching
-									</li>
-									<li class="listitem">
-										<code class="literal">*</code> at the end of a term signifies a prefix query
-									</li>
-									<li class="listitem">
-										<code class="literal">(</code> and <code class="literal">)</code> signify precedence
-									</li> 
-								</ul>  
+									<p class="dropdown-item" href="#"><code class="literal">+</code> signifies AND operation</p>
+									<p class="dropdown-item" href="#"><code class="literal">|</code> signifies OR operation</p>
+									<p class="dropdown-item" href="#"><code class="literal">-</code> negates a single token</p>
+									<p class="dropdown-item" href="#"><code class="literal">"</code> wraps a number of tokens to signify a phrase for searching</p>
+									<p class="dropdown-item" href="#"><code class="literal">*</code> at the end of a term signifies a prefix query</p>
+									<p class="dropdown-item" href="#"><code class="literal">(</code> and <code class="literal">)</code> signify precedence</p>
+  
 								<div class="dropdown-divider"></div> 
 								<a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Help">More</a>
 							</div>
 						</li>
+					</ul> 
+					<ul class="nav navbar-nav navbar-right">
+						@if (Html.ViewData.Eval("PropertyId") !=null)
+						{
+						 <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Back</a>
+						}
 					</ul>
 				</div>
 			</div>
